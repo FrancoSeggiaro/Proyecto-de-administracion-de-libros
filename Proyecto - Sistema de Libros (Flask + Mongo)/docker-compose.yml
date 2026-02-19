@@ -1,0 +1,41 @@
+# se definen los contenedores (servicios) que componen la aplicacion
+services:
+  #--Base de Datos--
+  db:
+    image: mongo:latest #imagen oficial de MongoDB desde Docker Hub
+    container_name: mongodb_libros #nombre del contenedor
+    environment:    #variables de entorno para configurar el acceso a la base de datos
+      MONGO_INITDB_ROOT_USERNAME: admin 
+      MONGO_INITDB_ROOT_PASSWORD: secreto 
+      MONGO_INITDB_DATABASE: libros_db #creacion de la base de datos al iniciar el contenedor
+    volumes: #para que los datos no se pierdan al tumbar el contenedor
+      - mongo_data:/data/db
+    networks: # Conecta este contenedor a una red virtual aislada
+      - libros_net
+  
+  #--Aplicacion Web--
+  web:
+    build: ./web #ruta al Dockerfile de la aplicacion web
+    container_name: flask_app  #nombre del contenedor    
+    # Redirección de puertos: [Puerto de la PC]:[Puerto dentro del contenedor]
+    ports:
+      - "8080:80"
+    depends_on: # Asegura que la base de datos se levante antes que la aplicacion
+      - db
+    networks:
+      - libros_net
+    environment: # Variables de entorno para la aplicacion web
+      MONGO_INITDB_ROOT_USERNAME: admin 
+      MONGO_INITDB_ROOT_PASSWORD: secreto
+
+#red virtual para la comunicacion entre servicios
+networks:
+  libros_net:
+
+#volumen para persistencia de datos de MongoDB
+volumes:
+  mongo_data:
+
+
+  
+  

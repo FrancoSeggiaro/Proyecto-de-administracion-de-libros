@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Librería Flask-Mongo</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+
+    <h1 style="text-align:center">Librería y Libros</h1>
+    <br>
+    <div style="width: 80%; margin: 0 auto;">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div style="padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; 
+                          color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; text-align: center;">
+                <strong>Aviso:</strong> {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+    </div>
+    <div style="display: flex; justify-content: space-around; padding: 20px;">
+
+        <div style="width: 60%; text-align:center;">
+            <h2>Inventario de Libros</h2>
+
+            <table border="1" style="width: 100%; border-collapse: collapse;">
+                <thead style="background-color: #f2f2f2;">
+                    <tr>
+                        <th>Identificador</th>
+                        <th>Título</th>
+                        <th>Páginas</th>
+                        <th>Editorial</th>
+                        <th>ISBN</th>
+                        <th>Costo (USD)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for libro in libros %}
+                    <tr>
+                        <td>{{ libro._id }}</td>
+                        <td>{{ libro.titulo }}</td>
+                        <td>{{ libro.paginas }}</td> <td>{{ libro.editorial }}</td>
+                        <td>{{ libro.isbn }}</td>
+                        <td>${{ libro.costo }}</td>
+                        <td>
+                            <a href="/editar/{{ libro._id }}"><button>Editar</button></a>
+
+                            <form action="/eliminar/{{ libro._id }}" method="POST" style="display:inline;">
+                                <button type="submit" onclick="return confirm('¿Eliminar este libro?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if not libros %}
+                <p>No se encontraron libros en la base de datos.</p>
+            {% endif %}
+        </div>
+
+        <div style="width: 30%; text-align:center; border-left: 1px solid #ccc; padding-left: 20px;">
+
+            <h2>Agregar Nuevo Libro</h2>
+            <form action="/agregar" method="POST" autocomplete="off">
+                <input type="text" name="id" placeholder="ID (Único)" required><br><br>
+                <input type="text" name="titulo" placeholder="Título" required><br><br>
+                <input type="number" name="paginas" placeholder="Número de Páginas" required><br><br>
+                <input type="text" name="editorial" placeholder="Editorial" required><br><br>
+                <input type="text" name="isbn" placeholder="ISBN" required><br><br>
+                <input type="number" step="0.01" name="costo" placeholder="Costo USD" required><br><br>
+
+                <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+                    Guardar Libro
+                </button>
+            </form>
+
+            <hr style="margin: 30px 0;">
+s
+            <h2>Buscar por Título</h2>
+            <form action="/buscar" method="GET" autocomplete="off">
+                <input type="text" name="titulo" placeholder="Ej: Rayuela" required>
+                <button type="submit">Buscar</button>
+            </form>
+            <br>
+            <a href="{{ url_for('index') }}">Ver todos los libros</a>
+
+        </div>
+
+    </div>
+
+    <footer style="text-align:center; margin-top:40px; color: #666;">
+        <hr>
+        <small>&copy; 2026 - Trabajo Final Sistemas Operativos</small>
+    </footer>
+
+</body>
+</html>
